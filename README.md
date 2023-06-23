@@ -32,7 +32,7 @@ $ catkin_make
 Now that you have a workspace, clone or download this repo into the **src** directory of your workspace:
 ```sh
 $ cd ~/catkin_ws/src
-$ git clone https://github.com/Bootcamp-AI/RoboND-Kinematics-Project.git
+$ git clone https://github.com/Bootcamp-AI/RoboND-Kinematics.git
 ```
 
 Now from a terminal window:
