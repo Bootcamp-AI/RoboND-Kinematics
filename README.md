@@ -39,7 +39,7 @@ Now from a terminal window:
 
 ```sh
 $ cd ~/catkin_ws
-$ rosdep install --from-paths src --ignore-src --rosdistro=kinetic -y
+$ rosdep install --from-paths src --ignore-src --rosdistro=noetic -y
 $ cd ~/catkin_ws/src/RoboND-Kinematics/kuka_arm/scripts
 $ sudo chmod +x target_spawn.py
 $ sudo chmod +x IK_server.py
