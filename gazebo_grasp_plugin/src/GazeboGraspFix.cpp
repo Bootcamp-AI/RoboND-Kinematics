@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 #include <gazebo_grasp_plugin/GazeboGraspFix.h>
-#include <gazebo_version_helpers/GazeboVersionHelpers.h>
+//#include <gazebo_version_helpers/GazeboVersionHelpers.h>
 
 using gazebo::GazeboGraspFix;
 using gazebo::GzVector3;
