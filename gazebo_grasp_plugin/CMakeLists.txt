@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
   std_msgs
-  gazebo_version_helpers
+  
 )
 
 find_package(gazebo REQUIRED)
@@ -37,7 +37,7 @@ catkin_package(
   # fix will be OK.
   INCLUDE_DIRS include ${CMAKE_CURRENT_BINARY_DIR}/..
   LIBRARIES gazebo_grasp_fix gazebo_grasp_msgs
-  CATKIN_DEPENDS gazebo_ros geometry_msgs roscpp std_msgs gazebo_version_helpers
+  CATKIN_DEPENDS gazebo_ros geometry_msgs roscpp std_msgs 
   DEPENDS gazebo
 )
 
