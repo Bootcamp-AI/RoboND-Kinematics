@@ -1,15 +1,23 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gazebo_grasp_plugin)
+project(gazebo_state_plugins)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  gazebo_ros
+find_package(
+  catkin 
+  REQUIRED COMPONENTS
+  gazebo_world_plugin_loader
+  gazebo_version_helpers
   geometry_msgs
   roscpp
+  shape_msgs
   std_msgs
-  gazebo_version_helpers
+  nav_msgs
+  gazebo_ros
+  object_msgs
+  object_msgs_tools
+  eigen_conversions
 )
 
 find_package(gazebo REQUIRED)
@@ -30,9 +38,10 @@ find_package(gazebo REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES gazebo_grasp_fix
-  CATKIN_DEPENDS gazebo_ros geometry_msgs roscpp std_msgs gazebo_version_helpers
-  DEPENDS gazebo
+  LIBRARIES gazebo_state_plugins gazebo_map_publisher
+  CATKIN_DEPENDS geometry_msgs roscpp shape_msgs std_msgs nav_msgs gazebo_world_plugin_loader
+        gazebo_ros object_msgs object_msgs_tools eigen_conversions
+  DEPENDS gazebo_ros
 )
 
 ###########
@@ -59,26 +68,38 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
 )
 
-link_directories(
-  ${catkin_LIBRARY_DIRS}
-  ${GAZEBO_LIBRARY_DIRS}
+## Declare a cpp library
+add_library(gazebo_object_info
+   src/GazeboObjectInfo.cpp
 )
 
-## Declare a cpp library
-add_library(gazebo_grasp_fix SHARED src/GazeboGraspFix.cpp src/GazeboGraspGripper.cpp)
+add_library(gazebo_map_publisher
+   src/GazeboMapPublisher.cpp
+)
+
+
+## Declare a cpp executable
+add_executable(gazebo_request_object_info test/object_info_request.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(gazebo_grasp_plugin_node gazebo_grasp_plugin_generate_messages_cpp)
-add_dependencies(gazebo_grasp_fix ${catkin_EXPORTED_TARGETS})
+add_dependencies(gazebo_request_object_info ${catkin_EXPORTED_TARGETS})
+add_dependencies(gazebo_object_info ${catkin_EXPORTED_TARGETS})
+add_dependencies(gazebo_map_publisher ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-
-target_link_libraries(gazebo_grasp_fix 
-	${catkin_LIBRARIES} 
-	${GAZEBO_LIBRARIES} 
-	${Boost_LIBRARIES}
+target_link_libraries(gazebo_object_info
+   ${GAZEBO_LIBRARIES}
+   ${catkin_LIBRARIES}
 )
+target_link_libraries(gazebo_map_publisher
+   ${GAZEBO_LIBRARIES}
+   ${catkin_LIBRARIES}
+)
+target_link_libraries(gazebo_request_object_info
+   ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##
@@ -95,7 +116,7 @@ target_link_libraries(gazebo_grasp_fix
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS gazebo_grasp_fix
+install(TARGETS gazebo_object_info gazebo_map_publisher gazebo_request_object_info
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -107,10 +128,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
    FILES_MATCHING PATTERN "*.h"
 )
 
-install(DIRECTORY launch
+
+install(DIRECTORY launch 
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   FILES_MATCHING PATTERN "*.launch"
 )
+
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -124,7 +147,7 @@ install(DIRECTORY launch
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_gazebo_grasp_plugin.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_gazebo_state_plugins.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
