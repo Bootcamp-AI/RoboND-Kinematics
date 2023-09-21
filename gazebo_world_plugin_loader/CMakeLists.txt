@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gazebo_grasp_plugin)
+project(gazebo_world_plugin_loader)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  gazebo_ros
-  geometry_msgs
+find_package(
+  catkin
+  REQUIRED COMPONENTS
   roscpp
-  std_msgs
-  gazebo_version_helpers
+  gazebo_ros
 )
 
 find_package(gazebo REQUIRED)
@@ -29,18 +28,11 @@ find_package(gazebo REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  # Binary directory required for proto headers inclusion to work, because install commands don't
-  # get executed in devel space. The directory above is required so that an include of
-  # <gazebo_grasp_plugin/msgs/grasp_event.pb.h> 
-  # also works in devel space like it needs to be in install space.
-  # Probably we can find a better solution for this, but until then this
-  # fix will be OK.
-  INCLUDE_DIRS include ${CMAKE_CURRENT_BINARY_DIR}/..
-  LIBRARIES gazebo_grasp_fix gazebo_grasp_msgs
-  CATKIN_DEPENDS gazebo_ros geometry_msgs roscpp std_msgs gazebo_version_helpers
-  DEPENDS gazebo
+  INCLUDE_DIRS include
+  LIBRARIES gazebo_world_plugin_loader
+  CATKIN_DEPENDS roscpp gazebo_ros
+  DEPENDS gazebo_ros
 )
-
 
 ###########
 ## Build ##
@@ -57,6 +49,7 @@ else()
     message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler. Suggested solution: update the pkg build-essential ")
 endif()
 
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
@@ -64,32 +57,19 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_subdirectory(msgs)
-link_directories(
-  ${catkin_LIBRARY_DIRS}
-  ${GAZEBO_LIBRARY_DIRS}
-  ${CMAKE_CURRENT_BINARY_DIR}/msgs
+add_library(gazebo_world_plugin_loader
+    src/GazeboPluginLoader.cpp
 )
 
-## Declare a cpp library
-add_library(gazebo_grasp_fix SHARED src/GazeboGraspFix.cpp src/GazeboGraspGripper.cpp)
+add_dependencies(gazebo_world_plugin_loader ${catkin_EXPORTED_TARGETS})
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-# add_dependencies(gazebo_grasp_plugin_node gazebo_grasp_plugin_generate_messages_cpp)
-add_dependencies(gazebo_grasp_fix ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-
-target_link_libraries(gazebo_grasp_fix
-   gazebo_grasp_msgs
-   ${catkin_LIBRARIES}
+target_link_libraries(gazebo_world_plugin_loader
    ${GAZEBO_LIBRARIES}
-   ${Boost_LIBRARIES}
+   ${catkin_LIBRARIES}
 )
+
 
 #############
 ## Install ##
@@ -106,7 +86,7 @@ target_link_libraries(gazebo_grasp_fix
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS gazebo_grasp_fix
+install(TARGETS gazebo_world_plugin_loader
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -123,6 +103,7 @@ install(DIRECTORY launch
   FILES_MATCHING PATTERN "*.launch"
 )
 
+
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
 #   # myfile1
@@ -135,7 +116,7 @@ install(DIRECTORY launch
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_gazebo_grasp_plugin.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_gazebo_world_plugin_loader.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
