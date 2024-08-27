@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-
-# Author: Harsh Pandya
 
 # import ros modules
 import yaml
