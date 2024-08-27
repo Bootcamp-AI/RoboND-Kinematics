@@ -22,7 +22,7 @@ from sympy import *
 def handle_calculate_IK(req):
     rospy.loginfo("Received %s eef-poses from the plan" % len(req.poses))
     if len(req.poses) < 1:
-        print "No valid poses received"
+        print("No valid poses received")
         return -1
     else:
 
